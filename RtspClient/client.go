@@ -28,7 +28,7 @@ func main() {
 	session, err := rtsp.Dial(uri)
 	session.Headers = append(req.Header)
 	session.Options()
-	session.Streams()
+	streams := session.Streams()
 
 	if err != nil {
 		panic(err)
@@ -37,10 +37,13 @@ func main() {
 
 	for {
 		packet, err := session.ReadPacket()
+
+		fmt.Println(packet.Data)
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println(packet.Data)
+		//fmt.Println(packet.Data)
+
 	}
 
 }

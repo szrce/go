@@ -2,6 +2,8 @@
 example 
 go run main.go directory
 
+```
+
 output -----
 rookie@sezers-MacBook-Pro scanFileOverVirusTotal % go run main.go x
 aaa

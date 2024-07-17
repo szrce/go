@@ -9,14 +9,14 @@ import (
 	"os"
 )
 
-func sendRequest(hash string) {
+func sendRequest(hash string, apiKey string) {
 	//send request
-	url := "https://www.virustotal.com/api/v3/files/275a021bbfb6489e54d471899f7db9d1663fc695ec2fe2a2c4538aabf651fd0f"
+	url := "https://www.virustotal.com/api/v3/files/" + hash
 
 	req, _ := http.NewRequest("GET", url, nil)
 
 	req.Header.Add("accept", "application/json")
-	req.Header.Add("x-apikey", "API_KEY")
+	req.Header.Add("x-apikey", apiKey)
 
 	res, _ := http.DefaultClient.Do(req)
 
@@ -28,8 +28,10 @@ func sendRequest(hash string) {
 
 func main() {
 
-	if len(os.Args) > 1 {
+	if len(os.Args) > 2 {
 		directory := os.Args[1]
+		apiKey := os.Args[2]
+
 		if _, err := os.Stat(directory); os.IsNotExist(err) {
 			fmt.Println("directory does not exist")
 			return
@@ -58,7 +60,7 @@ func main() {
 				fmt.Printf("%x", h.Sum(nil))
 
 				fmt.Println("File: ", file.Name())
-				sendRequest(fmt.Sprintf("%x", h.Sum(nil)))
+				sendRequest(fmt.Sprintf("%x", h.Sum(nil)), apiKey)
 			}
 		}
 

@@ -1,6 +1,6 @@
 
 example 
-go run main.go directory
+go run main.go directory apiKey
 
 ```
 

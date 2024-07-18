@@ -7,6 +7,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"github.com/fatih/color"
+
 )
 
 func sendRequest(hash string, apiKey string) {
@@ -28,9 +30,13 @@ func sendRequest(hash string, apiKey string) {
 
 func main() {
 
+
 	if len(os.Args) > 2 {
 		directory := os.Args[1]
 		apiKey := os.Args[2]
+		color.Red("your directory we scan this directory:" + directory)
+		color.Red("your api key:" + apiKey)
+		return
 
 		if _, err := os.Stat(directory); os.IsNotExist(err) {
 			fmt.Println("directory does not exist")

@@ -1,14 +1,20 @@
 
 example 
-go run main.go directory apiKey
+```
+
+./main -h
+Usage of /var/folders/tj/6ctvsr9d1z5125d90gcf0qk40000gn/T/go-build491164529/b001/exe/main:
+  -d string
+    	a directory (default "x")
+  -k string
+    	your api key (default "1")
+```
+
 
 ```
 
 output -----
-rookie@sezers-MacBook-Pro scanFileOverVirusTotal % go run main.go x
-aaa
-44d88612fea8a8f36de82e1278abb02fFile:  eicar.com.txt
-rookie@sezers-MacBook-Pro scanFileOverVirusTotal % go run main.go x
+rookie@sezers-MacBook-Pro scanFileOverVirusTotal % go run main.go -d x/ -k apikey
 44d88612fea8a8f36de82e1278abb02fFile:  eicar.com.txt
 {
     "data": {

@@ -50,6 +50,20 @@ func checkdomain(domain string) bool {
 	return false
 }
 
+func isHTTPs(val string) bool {
+	var part = strings.Split(val, ":")
+	if part[1] == "443" {
+		return true
+	}
+	return false
+}
+func isBlocked(val string) bool{
+	if checkdomain(val) {
+		return true
+	}
+	return false
+}
+
 func handler(conn net.Conn) {
 	fmt.Printf("======>connection coming this  %s \n\n", conn.RemoteAddr().String())
 	for {
@@ -66,19 +80,31 @@ func handler(conn net.Conn) {
 		requestStr := string(buf)
 		requestParts := strings.Split(requestStr, " ")
 		requrl, err := url.Parse(requestParts[1])
-		fmt.Printf("%s", requrl)
+		//fmt.Printf("%s\n", requrl)
 
-		if checkdomain(requrl.Host) {
-			conn.Write([]byte("<html><body><div style=\"background-color:red;\">blocked</div></body></html>"))
-			conn.Close()
-		} else {
-			resp, err := http.Get("http://example.com/")
-			if err != nil {
+		if isHTTPs(requestParts[1]){
+			//connn
+			var part = strings.Split(requestParts[1], ":")
+			if isBlocked(part[0]) {
+				fmt.Println("passing2")
+				conn.Write([]byte("<html><body><div style=\"background-color:red;\">blocked 443</div></body></html>"))
+				conn.Close()
 			}
-			defer resp.Body.Close()
-			body, err := io.ReadAll(resp.Body)
-			conn.Write(body)
-			conn.Close()
+		}else{
+
+			fmt.Println(requrl)
+			if isBlocked(requrl.Host) {
+				conn.Write([]byte("<html><body><div style=\"background-color:red;\">blocked</div></body></html>"))
+				conn.Close()
+			} else {
+				resp, err := http.Get("http://example.com")
+				if err != nil {
+				}
+				defer resp.Body.Close()
+				body, err := io.ReadAll(resp.Body)
+				conn.Write(body)
+				conn.Close()
+			}
 
 		}
 

@@ -14,8 +14,8 @@ import (
 func main() {
 
 	ls, err := net.Listen("tcp4", ":9020")
-
 	fmt.Println("listen:9020")
+
 	if err != nil {
 		panic(err)
 	}
@@ -25,7 +25,6 @@ func main() {
 		if err != nil {
 			fmt.Println("connect failed", err)
 		}
-
 		go handler(conn)
 	}
 
@@ -51,8 +50,8 @@ func checkdomain(domain string) bool {
 }
 
 func isHTTPs(val string) bool {
-	var part = strings.Split(val, ":")
-	if part[1] == "443" {
+	//var part = strings.Split(val, ":")
+	if val == "CONNECT" {
 		return true
 	}
 	return false
@@ -64,12 +63,15 @@ func isBlocked(val string) bool{
 	return false
 }
 
+
+
 func handler(conn net.Conn) {
 	fmt.Printf("======>connection coming this  %s \n\n", conn.RemoteAddr().String())
 	for {
 
 		buf := make([]byte, 1024)
 		_, err := conn.Read(buf[:])
+
 
 		if err != nil {
 			fmt.Printf("\nconnection broken %s \n", err)
@@ -80,16 +82,26 @@ func handler(conn net.Conn) {
 		requestStr := string(buf)
 		requestParts := strings.Split(requestStr, " ")
 		requrl, err := url.Parse(requestParts[1])
-		//fmt.Printf("%s\n", requrl)
-
-		if isHTTPs(requestParts[1]){
+		
+		
+		if isHTTPs(requestParts[0]){
 			//connn
+
 			var part = strings.Split(requestParts[1], ":")
 			if isBlocked(part[0]) {
-				fmt.Println("passing2")
 				conn.Write([]byte("<html><body><div style=\"background-color:red;\">blocked 443</div></body></html>"))
 				conn.Close()
 			}
+
+			//check the address exist?
+			CheckConn, err := net.Dial("tcp",requestParts[1])
+			if err != nil {
+				// handle error
+			}
+			conn.Write([]byte("HTTP/1.1 200 Connection Established\r\n\r\n"))
+			go io.Copy(CheckConn, conn)
+			io.Copy(conn, CheckConn)
+
 		}else{
 
 			fmt.Println(requrl)
@@ -97,7 +109,7 @@ func handler(conn net.Conn) {
 				conn.Write([]byte("<html><body><div style=\"background-color:red;\">blocked</div></body></html>"))
 				conn.Close()
 			} else {
-				resp, err := http.Get("http://example.com")
+				resp, err := http.Get("http://"+requrl.Host + requrl.Path)
 				if err != nil {
 				}
 				defer resp.Body.Close()
